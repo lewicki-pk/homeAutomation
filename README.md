@@ -3,10 +3,10 @@ Ficzery:
 - komunikacja z OpenHAB
     - tworzenie plikow konfiguracyjnych
     - wysylanie update'ow przy uzyciu MQTT
--
 
 Zaleznosci:
 - paho library
+- libssl
 - openHAB
 
 
