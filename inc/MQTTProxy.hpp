@@ -10,6 +10,7 @@
 #ifndef UNIT_TEST
 #include "MQTTClient.h"
 #endif
+
 #include <iostream>
 
 class MQTTProxy : public IMQTTProxy
