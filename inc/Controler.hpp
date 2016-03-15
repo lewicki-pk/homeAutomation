@@ -10,7 +10,7 @@
 #include <SitemapGenerator.hpp>
 #include <ItemsGenerator.hpp>
 
-#include <RF24.h>
+#include <RF24/RF24.h>
 
 class Controler: public IControler
 {
