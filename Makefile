@@ -1,4 +1,3 @@
-MAKEFLAGS=-j4
 CC=g++
 CFLAGS+="-I./inc"
 CXXFLAGS+="-std=c++14"

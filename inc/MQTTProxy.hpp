@@ -7,9 +7,7 @@
 #include "stdlib.h"
 #include "string.h"
 
-#ifndef UNIT_TEST
-#include "MQTTClient.h"
-#endif
+#include <mosquitto.h>
 
 #include <iostream>
 
@@ -26,13 +24,13 @@ public:
 protected:
 
     MQTTProxy();
-#ifndef UNIT_TEST
+
     void init();
 
     void disconnect();
 
     MQTTClient client;
-#endif
+
     static MQTTProxy* _instance;
 
 };
