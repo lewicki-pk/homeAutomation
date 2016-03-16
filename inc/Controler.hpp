@@ -11,6 +11,7 @@
 #include <ItemsGenerator.hpp>
 
 #include <RF24/RF24.h>
+#include "MQTTProxy.hpp"
 
 class Controler: public IControler
 {
@@ -62,4 +63,6 @@ private:
     ItemsGenerator itemsGenerator;
 
     SensorDB* sensorDB;
+
+    IMQTTProxy* mqttProxy;
 };

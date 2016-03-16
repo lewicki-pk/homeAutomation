@@ -2,7 +2,6 @@
 
 #include "Controler.hpp"
 #include "TemperatureNode.hpp"
-#include "MQTTProxy.hpp"
 
 #include "DebugLog.hpp"
 
@@ -12,9 +11,13 @@ Controler::Controler(std::shared_ptr<RF24> passedRadio)
 : radio(passedRadio)
 {
     setupConnection();
+    mqttProxy = new MQTTProxy("ExampleClientPub", "temperature/value", "localhost", 1883);
 }
 
-Controler::~Controler() { }
+Controler::~Controler()
+{
+    delete mqttProxy;
+}
 
 void Controler::receiveMessages()
 {
@@ -161,7 +164,7 @@ void Controler::createAndAddNode(Header hdr)
     {
     case 1 : // temperatureNode
         DEBUG_LOG("Added new temperature node with id=" + std::to_string(hdr.nodeId));
-        nodeToRegister = new TemperatureNode(MQTTProxy::getInstance());
+        nodeToRegister = new TemperatureNode(mqttProxy);
         break;
     default :
         DEBUG_LOG("Unknown node type. Returning.");

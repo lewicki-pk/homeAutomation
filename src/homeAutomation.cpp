@@ -5,8 +5,8 @@
 
 int main()
 {
-    // TODO replace radio with it's interface
-    std::shared_ptr<RF24> radio(RPI_BPLUS_GPIO_J8_15, RPI_BPLUS_GPIO_J8_24, BCM2835_SPI_SPEED_8MHZ); // TODO include RPi GPIO includes
+    // TODO replace radio with it's interface and create different for host (Debian) and target (RPi)
+    std::shared_ptr<RF24> radio = std::make_shared<RF24>(15, 24); // TODO check pins
     Controler controler(radio);
     while (1)
     {

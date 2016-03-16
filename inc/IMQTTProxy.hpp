@@ -5,6 +5,6 @@
 class IMQTTProxy
 {
 public:
-    virtual bool publish(std::string topic, std::string payload) =0;
+    virtual bool send_message(const char* _message) =0;
     
 };

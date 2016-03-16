@@ -15,22 +15,15 @@ class MQTTProxy : public IMQTTProxy
 {
 public:
 
-    bool publish(std::string topic, std::string payload);
-
+    MQTTProxy(const char* id, const char* _topic, const char* host, int port);
     virtual ~MQTTProxy();
 
-    static MQTTProxy* getInstance();
+    bool send_message(const char * _message);
 
-protected:
-
-    MQTTProxy();
-
-    void init();
-
-    void disconnect();
-
-    MQTTClient client;
-
-    static MQTTProxy* _instance;
-
+private:
+    const char* host;
+    const char* id;
+    const char* topic;
+    int port;
+    int keepalive;
 };

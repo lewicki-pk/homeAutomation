@@ -55,7 +55,7 @@ void TemperatureNode::setTemperatureValue(uint8_t newVal)
         nodeParametersMap.insert(std::pair<uint8_t, Item>(1, item));
 
     if (updater)
-        updater->publish("/Temperature/" + std::to_string(nodeId), std::to_string(newVal));
+        updater->send_message(std::to_string(newVal).c_str());
 }
 
 void TemperatureNode::setHumidityValue(uint8_t newVal)
@@ -68,7 +68,7 @@ void TemperatureNode::setHumidityValue(uint8_t newVal)
         nodeParametersMap.insert(std::pair<uint8_t, Item>(2, item));
 
     if (updater)
-        updater->publish("/Humidity/" + std::to_string(nodeId), std::to_string(newVal));
+        updater->send_message(std::to_string(newVal).c_str());
 }
 
 uint8_t TemperatureNode::getLastReadingStatus()
@@ -81,7 +81,7 @@ void TemperatureNode::setLastReadingStatus(uint8_t newVal){
     lastReadingStatus = newVal;
 
     if (updater)
-        updater->publish("/Status/" + std::to_string(nodeId), std::to_string(newVal));
+        updater->send_message(std::to_string(newVal).c_str());
 }
 
 uint8_t TemperatureNode::getNodeId()
