@@ -1,4 +1,10 @@
+*/cscope.files
+*/cscope.out
+*/tags
 .cproject
 .project
 .settings
 /Default/
+cscope.files
+cscope.out
+tags
