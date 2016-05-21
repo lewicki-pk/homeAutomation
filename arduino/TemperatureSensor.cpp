@@ -22,13 +22,14 @@ void setup()
     radio.setPALevel(RF24_PA_LOW);
     radio.openWritingPipe(addresses[0]);
     radio.openReadingPipe(1,addresses[1]);
+    radio.stopListening();
 }
 
 struct TemperatureData
 {
     float humidity;
     float temperature;
-    int errorCode;
+    unsigned int errorCode;
 };
 
 void loop()
@@ -60,8 +61,6 @@ void loop()
     Serial.print("Temperature (°C): ");
     Serial.println((float)DHT11.temperature, 2);
 
-    delay(2000);
-
     Serial.println(F("Now sending"));
 
     TemperatureData tempData;
@@ -71,18 +70,6 @@ void loop()
     unsigned long start_time = micros();
     if (!radio.write( &tempData, sizeof(tempData) )){
         Serial.println(F("failed"));
-    }
-
-    radio.startListening();
-
-    unsigned long started_waiting_at = micros();
-    boolean timeout = false;
-
-    while ( ! radio.available() ){
-        if (micros() - started_waiting_at > 200000 ){
-            timeout = true;
-            break;
-        }
     }
 
     delay(1000);
