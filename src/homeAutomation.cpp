@@ -1,18 +1,25 @@
-#include <Controler.hpp>
+//#include <Controler.hpp>
 
-#include <CommonMessages.hpp>
+//#include <CommonMessages.hpp>
 
+#include <iostream>
+#include <boost/asio.hpp>
 
 int main()
 {
-    // TODO replace radio with it's interface and create different for host (Debian) and target (RPi)
-    std::shared_ptr<RF24> radio = std::make_shared<RF24>(15, 24); // TODO check pins
-    Controler controler(radio);
-    while (1)
-    {
-        controler.receiveMessages();
-        controler.handleInitializations();
-        controler.handleMessages();
-        controler.sendResponses();
-    }
+    boost::asio::io_service ioService;
+    boost::asio::deadline_timer timer(ioService);
+    timer.expires_from_now(boost::posix_time::seconds(5));
+    timer.async_wait([&](const boost::system::error_code&)
+            {std::cout << "Timer expired" << std::endl;});
+    std::cout << "Starting timer" << std::endl;
+    ioService.run();
+//    try {
+//        controller.execute();
+//    }
+//    catch (const std::exception& e) {
+//        std::cerr << "Exception: " << e.what() << std::endl;
+//        return 1;
+//    }
+    return 0;
 }
