@@ -4,13 +4,8 @@
 .cproject
 .project
 .settings
-/Default/
-CMakeFiles/
-CMakeCache.txt
 Makefile
 
-arduino/build-*/
-cmake_install.cmake
 cscope.files
 cscope.out
 homeAutomation
