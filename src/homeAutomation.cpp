@@ -1,33 +1,18 @@
-//#include "Controller.h"
-
-//#include <CommonMessages.hpp>
 #include "PiDht.h"
+#include "MQTTWrapper.h"
 
-#include <iostream>
 #include <boost/asio.hpp>
-#include <functional>
+#include <memory>
 
 int main()
 {
     boost::asio::io_service ioService;
 
-    boost::asio::deadline_timer timer(ioService);
-    timer.expires_from_now(boost::posix_time::seconds(1));
+    std::shared_ptr<MQTTWrapper> mqtt = std::make_shared<MQTTWrapper>("Lewiatan IoT", "m21.cloudmqtt.com", 19802);
 
-    std::function<void(const boost::system::error_code&)> myFunctor = [](const boost::system::error_code&)
-        {
-            PiDht sensor;
-            sensor.readOne();
-            if (sensor.getReadStatus()) {
-                std::cout << "Received readings. Temperature = " << sensor.getTemperature() << " degrees Celsius, "
-                          << "Humidity = " << sensor.getHumidity() << " %" << std::endl;
-            } else {
-                std::cout << "Unable to read status" << std::endl;
-            }
-        };
+    PiDht sensor(ioService, mqtt);
 
-    timer.async_wait(myFunctor);
-    std::cout << "Starting timer" << std::endl;
+    sensor.execute();
     ioService.run();
     return 0;
 }

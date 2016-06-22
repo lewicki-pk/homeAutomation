@@ -3,12 +3,18 @@
 #include <wiringPi.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
+#include <boost/bind.hpp>
+
 int dht11_dat[5] = { 0, 0, 0, 0, 0 };
 
-PiDht::PiDht() :
-    goodRead(false)
+PiDht::PiDht(boost::asio::io_service& io, std::shared_ptr<MQTTWrapper> mqtt) :
+    goodRead(false),
+    timer(io),
+    innerMqtt(mqtt)
 {
-
+    if ( wiringPiSetup() == -1 )
+        exit( 1 ); // TODO throw
 }
 
 void PiDht::read_dht11_dat()
@@ -67,10 +73,6 @@ void PiDht::read_dht11_dat()
 
 void PiDht::readOne()
 {
-    //printf( "Raspberry Pi wiringPi DHT11 Temperature test program\n" );
-    if ( wiringPiSetup() == -1 )
-        exit( 1 ); // TODO throw
-
     read_dht11_dat();
 }
 
@@ -87,4 +89,28 @@ uint16_t PiDht::getHumidity()
 bool PiDht::getReadStatus()
 {
     return goodRead;
+}
+
+void PiDht::callback(const boost::system::error_code&)
+{
+    readOne();
+    if (goodRead) {
+        std::cout << "Received readings. Temperature = " << getTemperature() << " degrees Celsius, "
+            << "Humidity = " << getHumidity() << " %" << std::endl;
+        if (innerMqtt) {
+            innerMqtt->myPublish("sensors/temperature", std::to_string(getTemperature()));
+            innerMqtt->myPublish("sensors/humidity", std::to_string(getHumidity()));
+        }
+        timer.expires_from_now(boost::posix_time::seconds(5));
+    } else {
+        std::cout << "Unable to read status" << std::endl;
+        timer.expires_from_now(boost::posix_time::seconds(1));
+    }
+    timer.async_wait(boost::bind(&PiDht::callback, this, boost::asio::placeholders::error));
+}
+
+void PiDht::execute()
+{
+    timer.expires_from_now(boost::posix_time::seconds(1));
+    timer.async_wait(boost::bind(&PiDht::callback, this, boost::asio::placeholders::error));
 }
