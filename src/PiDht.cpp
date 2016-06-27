@@ -101,7 +101,7 @@ void PiDht::callback(const boost::system::error_code&)
             innerMqtt->myPublish("sensors/temperature", std::to_string(getTemperature()));
             innerMqtt->myPublish("sensors/humidity", std::to_string(getHumidity()));
         }
-        timer.expires_from_now(boost::posix_time::seconds(5));
+        timer.expires_from_now(boost::posix_time::seconds(55));
     } else {
         std::cout << "Unable to read status" << std::endl;
         timer.expires_from_now(boost::posix_time::seconds(1));
