@@ -32,7 +32,7 @@ void MQTTWrapper::on_connect(int rc)
 }
 
 void MQTTWrapper::myPublish(std::string topic, std::string value) {
-    int ret = publish(NULL, topic.c_str(), value.size(), value.c_str(), 2, false);
+    int ret = publish(NULL, topic.c_str(), value.size(), value.c_str(), 2, true);
     if (ret != MOSQ_ERR_SUCCESS) {
         std::cout << "Sending failed." << std::endl;
     }
