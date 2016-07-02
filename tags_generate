@@ -4,6 +4,7 @@ T="$(date +%s)"
 find ./src/ -name '*.cpp' -o -name '*.c' -o -name '*.hpp' -o -name '*.h' > /tmp/cscope.files ;
 find ./include/ -name '*.cpp' -o -name '*.c' -o -name '*.hpp' -o -name '*.h' >> /tmp/cscope.files ;
 find /usr/include -name '*.cpp' -o -name '*.c' -o -name '*.hpp' -o -name '*.h' >> /tmp/cscope.files ;
+find /usr/local/include -name '*.cpp' -o -name '*.c' -o -name '*.hpp' -o -name '*.h' >> /tmp/cscope.files ;
 mv /tmp/cscope.files .
 
 # cscope -b -q -k ;
