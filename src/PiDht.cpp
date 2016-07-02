@@ -63,11 +63,8 @@ void PiDht::read_dht11_dat()
         humidity = dht11_dat[0];
         temperature = dht11_dat[2];
         goodRead = true;
-        //printf( "Humidity = %d.%d %% Temperature = %d.%d C )\n",
-        //        dht11_dat[0], dht11_dat[1], dht11_dat[2], dht11_dat[3]);
     } else  {
         goodRead = false;
-        //printf( "Data not good, skip\n" );
     }
 }
 
