@@ -79,5 +79,5 @@ void loop(void)
   // Now, continue listening
   radio.startListening();
 
-  delay(2000);
+  delay(55000);
 }
