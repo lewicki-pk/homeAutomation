@@ -1,76 +1,83 @@
 #include <Arduino.h>
-#include <dht11.h>
 #include <SPI.h>
-#include <RF24.h>
+#include "nRF24L01.h"
+#include "RF24.h"
+#include <dht11.h>
+#include "../../include/common.h"
 
 RF24 radio(7,8);
 
-byte addresses[][6] = {"1Node", "2Node"};
-
 #define DHT11PIN 9
-
 dht11 DHT11;
 
-void setup()
+const uint64_t pipes[2] = { 0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL };
+
+void setup(void)
 {
-    Serial.begin(115200);
-    Serial.println("DHT11 TEST PROGRAM ");
-    Serial.print("LIBRARY VERSION: ");
-    Serial.println(DHT11LIB_VERSION);
-    Serial.println();
-    radio.begin();
-    radio.setPALevel(RF24_PA_LOW);
-    radio.openWritingPipe(addresses[0]);
-    radio.openReadingPipe(1,addresses[1]);
-    radio.stopListening();
+  Serial.begin(115200);
+
+  radio.begin();
+
+  // enable dynamic payloads
+  radio.enableDynamicPayloads();
+
+  // optionally, increase the delay between retries & # of retries
+  radio.setRetries(5,15);
+
+  radio.openWritingPipe(pipes[1]);
+  radio.openReadingPipe(1,pipes[0]);
+
+  radio.printDetails();
 }
 
-struct TemperatureData
+DHT11Readings getReadings()
 {
-    float humidity;
-    float temperature;
-    unsigned int errorCode;
-};
-
-void loop()
-{
-    Serial.println("\n");
-
     int chk = DHT11.read(DHT11PIN);
-
+    DHT11Readings readings;
     Serial.print("Read sensor: ");
     switch (chk)
     {
         case DHTLIB_OK:
             Serial.println("OK");
+            readings.status = true;
             break;
         case DHTLIB_ERROR_CHECKSUM:
             Serial.println("Checksum error");
+            readings.status = false;
             break;
         case DHTLIB_ERROR_TIMEOUT:
             Serial.println("Time out error");
+            readings.status = false;
             break;
         default:
             Serial.println("Unknown error");
+            readings.status = false;
             break;
     }
+    readings.temperature = DHT11.temperature;
+    readings.humidity = DHT11.humidity;
 
-    Serial.print("Humidity (%): ");
-    Serial.println((float)DHT11.humidity, 2);
+    return readings;
+}
 
-    Serial.print("Temperature (°C): ");
-    Serial.println((float)DHT11.temperature, 2);
+void loop(void)
+{
+  DHT11Readings payload = getReadings();
 
-    Serial.println(F("Now sending"));
+  Serial.print("Humidity (%): ");
+  Serial.println(payload.humidity);
 
-    TemperatureData tempData;
-    tempData.temperature = DHT11.temperature;
-    tempData.humidity = DHT11.humidity;
-    tempData.errorCode = chk;
-    unsigned long start_time = micros();
-    if (!radio.write( &tempData, sizeof(tempData) )){
-        Serial.println(F("failed"));
-    }
+  Serial.print("Temperature (°C): ");
+  Serial.println(payload.temperature);
 
-    delay(1000);
+  radio.stopListening();
+
+  Serial.print(F("Now sending length "));
+  Serial.println(sizeof(payload));
+  radio.write(&payload, sizeof(payload));
+
+  // Now, continue listening
+  radio.startListening();
+
+  delay(2000);
 }
