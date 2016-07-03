@@ -16,6 +16,7 @@ class RfDht
 {
 public:
     //RfDht(boost::asio::io_service& io, std::shared_ptr<MQTTWrapper> mqtt = nullptr);
+    RfDht(std::shared_ptr<MQTTWrapper> mqtt = nullptr);
     RfDht();
     void execute();
 private:
@@ -32,5 +33,5 @@ private:
     //uint16_t humidity;
     //bool goodRead;
     //boost::asio::deadline_timer timer;
-    //std::shared_ptr<MQTTWrapper> innerMqtt;
+    std::shared_ptr<MQTTWrapper> innerMqtt;
 };

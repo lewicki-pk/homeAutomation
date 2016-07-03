@@ -22,6 +22,13 @@ RfDht::RfDht() :
     radio(RPI_V2_GPIO_P1_15, RPI_V2_GPIO_P1_24, BCM2835_SPI_SPEED_8MHZ)
 {
 }
+
+RfDht::RfDht(std::shared_ptr<MQTTWrapper> mqtt) :
+    radio(RPI_V2_GPIO_P1_15, RPI_V2_GPIO_P1_24, BCM2835_SPI_SPEED_8MHZ),
+    innerMqtt(mqtt)
+{
+}
+
 const uint64_t pipes[2] = { 0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL };
 
 //const int max_payload_size = 32;
@@ -75,6 +82,10 @@ void RfDht::execute()
 
             // Spew it
             printf("Got response size=%i temp. value=%i, humidity value=%i, status=%i\n\r", len, payload.temperature, payload.humidity, payload.status);
+            if (innerMqtt && payload.status) {
+                innerMqtt->myPublish("sensors/rf24/temperature", std::to_string(payload.temperature));
+                innerMqtt->myPublish("sensors/rf24/humidity", std::to_string(payload.humidity));
+            }
         }
 
         // Try again 0.1s later

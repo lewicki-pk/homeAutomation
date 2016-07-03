@@ -9,10 +9,10 @@ int main()
 {
 //    boost::asio::io_service ioService;
 //
-//    std::shared_ptr<MQTTWrapper> mqtt = std::make_shared<MQTTWrapper>("Lewiatan IoT", "m21.cloudmqtt.com", 19802);
+    std::shared_ptr<MQTTWrapper> mqtt = std::make_shared<MQTTWrapper>("Lewiatan IoT", "m21.cloudmqtt.com", 19802);
 //
 //    PiDht sensor(ioService, mqtt);
-    RfDht sensor;
+    RfDht sensor(mqtt);
 
     sensor.execute();
 //    ioService.run();
