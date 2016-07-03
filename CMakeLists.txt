@@ -12,4 +12,4 @@ file (GLOB SOURCES "src/*.cpp")
 
 add_executable (homeAutomation ${SOURCES})
 
-target_link_libraries (homeAutomation ${Boost_LIBRARIES} -lwiringPi -lwiringPiDev -lmosquittopp -lpthread)
+target_link_libraries (homeAutomation ${Boost_LIBRARIES} -lwiringPi -lwiringPiDev -lmosquittopp -lrf24 -lpthread)
