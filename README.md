@@ -1,5 +1,6 @@
 Next step:
-- Add simple RF24 receiver class
+- Use ASIO in RfDht properly
+- Add handling of faulty RfDht
 
 Dependencies:
 - [mosquitto](https://github.com/eclipse/mosquitto)
