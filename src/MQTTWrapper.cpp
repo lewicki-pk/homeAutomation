@@ -31,6 +31,11 @@ void MQTTWrapper::on_connect(int rc)
     std::cout << "Connected with code " << rc << "." << std::endl;
 }
 
+void MQTTWrapper::on_disconnect(int rc)
+{
+    std::cout << "Disconnected with code " << rc << "." << std::endl;
+}
+
 void MQTTWrapper::myPublish(std::string topic, std::string value) {
     int ret = publish(NULL, topic.c_str(), value.size(), value.c_str(), 2, true);
     if (ret != MOSQ_ERR_SUCCESS) {

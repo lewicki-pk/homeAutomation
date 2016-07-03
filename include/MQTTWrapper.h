@@ -12,6 +12,7 @@ public:
     void myPublish(std::string topic, std::string value);
 private:
     void on_connect(int rc);
+    void on_disconnect(int rc);
     void on_publish(int mid);
 
     std::string host;
