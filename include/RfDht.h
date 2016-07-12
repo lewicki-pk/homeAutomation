@@ -15,7 +15,8 @@ public:
     void execute();
 private:
     RF24 radio;
-    void callback(const boost::system::error_code&);
+    void timerCallback(const boost::system::error_code&);
+    void intHandler();
 
     const uint64_t pipes[2] = { 0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL };
     DHT11Readings payload;

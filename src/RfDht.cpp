@@ -17,15 +17,24 @@ RfDht::RfDht(boost::asio::io_service& io, std::shared_ptr<MQTTWrapper> mqtt) :
     radio.openReadingPipe(1,pipes[1]);
 
     radio.startListening();
+    radio.maskIRQ(1,1,0);
+    int interruptPin = 11; // GPIO17
+    attachInterrupt(interruptPin, INT_EDGE_FALLING, RfDht::intHandler);
+}
+
+RfDht::intHandler()
+{
+    timer.expires_from_now(boost::posix_time::seconds(1));
+    timer.async_wait(boost::bind(&RfDht::timerCallback, this, boost::asio::placeholders::error));
 }
 
 void RfDht::execute()
 {
-    timer.expires_from_now(boost::posix_time::seconds(1));
-    timer.async_wait(boost::bind(&RfDht::callback, this, boost::asio::placeholders::error));
+    //timer.expires_from_now(boost::posix_time::seconds(1));
+    //timer.async_wait(boost::bind(&RfDht::timerCallback, this, boost::asio::placeholders::error));
 }
 
-void RfDht::callback(const boost::system::error_code&)
+void RfDht::timerCallback(const boost::system::error_code&)
 {
     unsigned long started_waiting_at = millis();
     bool timeout = false;
@@ -33,8 +42,10 @@ void RfDht::callback(const boost::system::error_code&)
         if (millis() - started_waiting_at > 500 )
             timeout = true;
 
-    if (radio.available())
+    bool isDataRead = false;
+    while (radio.available())
     {
+        isDataRead = true;
         // Grab the response, compare, and send to debugging spew
         uint8_t len = radio.getDynamicPayloadSize();
         radio.read(&payload, len);
@@ -46,11 +57,10 @@ void RfDht::callback(const boost::system::error_code&)
             innerMqtt->myPublish("sensors/rf24/temperature", std::to_string(payload.temperature));
             innerMqtt->myPublish("sensors/rf24/humidity", std::to_string(payload.humidity));
         }
-        timer.expires_from_now(boost::posix_time::seconds(54));
-    } else {
-        std::cout << "no data available" << std::endl;
-        timer.expires_from_now(boost::posix_time::milliseconds(500));
     }
-    timer.async_wait(boost::bind(&RfDht::callback, this, boost::asio::placeholders::error));
+    if (!isDataRead) {
+        std::cout << "no data available" << std::endl;
+        // TODO retry?
+    }
 }
 
